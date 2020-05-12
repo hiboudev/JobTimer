@@ -41,6 +41,7 @@ def resource_path(relative_path):
     # noinspection PyBroadException
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
+        # noinspection PyUnresolvedReferences
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
@@ -108,7 +109,7 @@ def on_create_projet_button_clicked():
 
 def on_delete_projet_button_clicked():
     global active_job
-    if active_job is None:  # Just to avoid python warning
+    if active_job is None:
         return
 
     stop_timer()
