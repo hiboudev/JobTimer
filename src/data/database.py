@@ -12,14 +12,14 @@ class Database:
     def __init__(self):
         self.__check_database()
 
-    def add_job(self, job_name: str) -> Job:
+    def add_job(self, job_name: str, hourly_rate: int) -> Job:
         connection = sqlite3.connect(self.DB_NAME)
         cursor = connection.cursor()
 
-        cursor.execute(f'''INSERT INTO jobs (name, elapsedTime) VALUES(?, ?)''',
-                       [job_name, 0])
+        cursor.execute(f'''INSERT INTO jobs (name, hourlyRate, elapsedTime) VALUES(?, ?, ?)''',
+                       [job_name, hourly_rate, 0])
 
-        job = Job(cursor.lastrowid, job_name, 0)
+        job = Job(cursor.lastrowid, job_name, hourly_rate, 0)
 
         connection.commit()
         connection.close()
@@ -30,12 +30,12 @@ class Database:
         connection = sqlite3.connect(self.DB_NAME)
         cursor = connection.cursor()
 
-        cursor.execute('''SELECT id, name, elapsedTime FROM jobs''')
+        cursor.execute('''SELECT id, name, hourlyRate, elapsedTime FROM jobs''')
 
         jobs = []
         rows = cursor.fetchall()
         for row in rows:
-            job = Job(row[0], row[1], row[2])
+            job = Job(row[0], row[1], row[2], row[3])
             jobs.append(job)
 
         connection.close()
@@ -48,6 +48,16 @@ class Database:
 
         cursor.execute('''UPDATE jobs SET elapsedTime=? WHERE id=?''',
                        [job.elapsed_time, job.id])
+
+        connection.commit()
+        connection.close()
+
+    def edit_job(self, job_id: int, name: str, hourly_rate: int):
+        connection = sqlite3.connect(self.DB_NAME)
+        cursor = connection.cursor()
+
+        cursor.execute('''UPDATE jobs SET name=?, hourlyRate=? WHERE id=?''',
+                       [name, hourly_rate, job_id])
 
         connection.commit()
         connection.close()
@@ -67,10 +77,12 @@ class Database:
             connection = sqlite3.connect(self.DB_NAME)
             cursor = connection.cursor()
 
-            cursor.execute('''CREATE TABLE jobs (
-                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                         name TEXT NOT NULL,
-                         elapsedTime INTEGER DEFAULT 0)
+            cursor.execute('''
+                        CREATE TABLE jobs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        hourlyRate INTEGER NOT NULL,
+                        elapsedTime INTEGER DEFAULT 0)
                          ''')
 
             connection.commit()

@@ -1,7 +1,7 @@
 import datetime
 from threading import Thread, Event
 from types import FunctionType
-from typing import Union
+from typing import Union, Callable
 
 from data.job import Job
 
@@ -44,7 +44,7 @@ class JobTimer:
         self.__timer_callback()
 
     def __timer_callback(self):
-        self.__time_update_callback(self.__counter.get_formatted_time())
+        self.__time_update_callback(self.__counter.get_total_seconds(), self.__counter.get_formatted_time())
 
     @property
     def is_running(self) -> bool:
@@ -84,7 +84,7 @@ class TimeCounter:
 
 
 class Timer(Thread):
-    def __init__(self, event: Event, callback: FunctionType):
+    def __init__(self, event: Event, callback: Callable):
         Thread.__init__(self)
         self.__stopped = event
         self.__callback = callback
