@@ -30,7 +30,8 @@ class Database:
         connection = sqlite3.connect(self.DB_NAME)
         cursor = connection.cursor()
 
-        cursor.execute('''SELECT id, name, hourlyRate, elapsedTime FROM jobs''')
+        # Collate to get a case-insensitive order
+        cursor.execute('''SELECT id, name, hourlyRate, elapsedTime FROM jobs ORDER by name COLLATE NOCASE''')
 
         jobs = []
         rows = cursor.fetchall()
@@ -47,7 +48,7 @@ class Database:
         cursor = connection.cursor()
 
         cursor.execute('''UPDATE jobs SET elapsedTime=? WHERE id=?''',
-                       [job.elapsed_time, job.id])
+                       [job.elapsed_seconds, job.id])
 
         connection.commit()
         connection.close()

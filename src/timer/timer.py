@@ -1,28 +1,34 @@
 import datetime
 from threading import Thread, Event
-from types import FunctionType
-from typing import Union, Callable
+from typing import Callable
 
-from data.job import Job
+from utils import utils
 
 
 class JobTimer:
 
+    # TODO remplacer le TimerThread, cf. inactivity_controller.py
     def __init__(self, time_update_callback):
         self.__time_update_callback = time_update_callback
         self.__timer_flag = Event()
         self.__timer = None
         self.__counter = TimeCounter()
-        self.__job: Union[Job, None] = None
         self.__is_running = False
 
-    def set_job(self, job: Job):
+    def reset(self, elapsed_seconds: float):
         self.stop()
         self.__counter.reset()
-        self.__job = job
-        self.__counter.add_seconds(job.elapsed_time)
+        self.__counter.add_seconds(elapsed_seconds)
 
         self.__timer_callback()
+
+    def set_elapsed_seconds(self, seconds: int):
+        self.__counter.reset()
+        self.__counter.add_seconds(seconds)
+        self.__timer_callback()
+
+    def get_elapsed_seconds(self) -> float:
+        return self.__counter.get_total_seconds()
 
     def start(self):
         self.__counter.stop()
@@ -37,8 +43,6 @@ class JobTimer:
     def stop(self):
         self.__timer_flag.set()
         self.__counter.stop()
-        if self.__job is not None:
-            self.__job.elapsed_time = self.__counter.get_total_seconds()
         self.__is_running = False
 
         self.__timer_callback()
@@ -48,6 +52,7 @@ class JobTimer:
 
     @property
     def is_running(self) -> bool:
+        # TODO utiliser __timer_flag ?
         return self.__is_running
 
 
@@ -75,8 +80,7 @@ class TimeCounter:
         return self.__get_current_elapsed_time() + self.__additional_seconds
 
     def get_formatted_time(self) -> str:
-        m, s = divmod(round(self.get_total_seconds()), 60)
-        h, m = divmod(m, 60)
+        h, m, s = utils.seconds_to_hms(self.get_total_seconds())
         return f'{h:02d}:{m:02d}:{s:02d}'
 
     def __get_current_elapsed_time(self) -> float:

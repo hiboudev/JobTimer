@@ -1,27 +1,25 @@
 from PyQt5.QtCore import QRegExp, QObject, QEvent
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QDialog, QWidget
-from PyQt5 import QtWidgets
 
 from ui.create_project_ui import Ui_CreateProjectDialog
+from ui.edit_project_ui import Ui_EditProjectDialog
+from utils import utils
 
 
 class CreateProjectDialog(QDialog):
-    """Employee dialog."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Create an instance of the GUI
-        self.ui = Ui_CreateProjectDialog()
+
+        self._build_ui()
         # Run the .setupUi() method to show the GUI
         self.ui.setupUi(self)
 
-        # self.ui.buttonBox.accepted.setEnabled(False)
-
-        # btn_ok = self.ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok)
-        # btn_ok.setEnabled(False)
-
         self.ui.hourlyRate.setValidator(QRegExpValidator(QRegExp('[0-9]+')))
+
+    def _build_ui(self):
+        self.ui = Ui_CreateProjectDialog()
 
     def set_values(self, name: str, hourly_rate: int):
         self.ui.projectName.setText(name)
@@ -33,7 +31,7 @@ class CreateProjectDialog(QDialog):
     def get_hourly_rate(self) -> str:
         return self.ui.hourlyRate.text()
 
-    def done(self, result):
+    def done(self, result: int):
         if not result:
             super().done(result)
             return
@@ -57,3 +55,22 @@ class CreateProjectDialog(QDialog):
             widget.setStyleSheet("")
 
         return super().eventFilter(widget, event)
+
+
+class EditProjectDialog(CreateProjectDialog):
+
+    def _build_ui(self):
+        self.ui = Ui_EditProjectDialog()
+
+    def get_seconds(self) -> int:
+        return utils.hms_to_seconds(
+            int(self.ui.elapsedHours.text()),
+            int(self.ui.elapsedMinutes.text()),
+            int(self.ui.elapsedSeconds.text()),
+        )
+
+    def set_seconds(self, elapsed_seconds: int):
+        h, m, s = utils.seconds_to_hms(elapsed_seconds)
+        self.ui.elapsedHours.setText(str(h))
+        self.ui.elapsedMinutes.setText(str(m))
+        self.ui.elapsedSeconds.setText(str(s))
