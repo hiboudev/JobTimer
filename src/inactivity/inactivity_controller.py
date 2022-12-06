@@ -7,7 +7,6 @@ from keyboard import KeyboardEvent
 
 
 class InactivityController:
-
     __DELAY_INACTIVITY = 60000
     __DELAY_MOUSE_DETECTION = 1000
 

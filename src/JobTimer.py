@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Optional
 
 from PyQt5.QtMultimedia import QSound
@@ -36,8 +37,15 @@ active_job: Optional[Job] = None
 
 is_running = False
 
+# We auto save time to DB in case of computer crash
+last_auto_save_time = time.time()
+AUTO_SAVE_DELAY = 60  # seconds
+
 
 def start_timer():
+    global last_auto_save_time
+    last_auto_save_time = time.time()
+
     timer.start()
     inactivity_controller.start()
     main_window.set_running_state(RunningState.RUNNING)
@@ -55,6 +63,22 @@ def stop_timer():
     is_running = False
 
 
+def inactivity_callback():
+    save_job_elapsed_time(timer.get_elapsed_seconds())
+    sound_inactivity.play()
+    timer.stop()
+    main_window.set_running_state(RunningState.IDLE)
+
+
+def activity_returns_callback():
+    global last_auto_save_time
+    last_auto_save_time = time.time()
+
+    sound_activity_returns.play()
+    timer.start()
+    main_window.set_running_state(RunningState.RUNNING)
+
+
 def set_active_job(new_job: Job):
     stop_timer()
     global active_job
@@ -70,7 +94,7 @@ def save_job_elapsed_time(elapsed_seconds: float):
         database.update_job_elapsed_time(active_job)
 
 
-def on_create_projet_button_clicked():
+def on_create_project_button_clicked():
     stop_timer()
     dialog = CreateProjectDialog()
     ok = dialog.exec()
@@ -80,7 +104,7 @@ def on_create_projet_button_clicked():
         set_active_job(new_job)
 
 
-def on_edit_projet_button_clicked():
+def on_edit_project_button_clicked():
     if not active_job:
         return
 
@@ -128,14 +152,23 @@ def on_job_selected():
 
 
 def on_start_stop_clicked():
+    if not active_job:
+        return
+
     if not is_running:
         start_timer()
     else:
         stop_timer()
 
 
-def timer_update_callback(seconds: float, time: str):
-    main_window.set_clock_text(time)
+def timer_update_callback(seconds: float, formatted_time: str):
+    global last_auto_save_time
+
+    if time.time() - last_auto_save_time >= AUTO_SAVE_DELAY:
+        save_job_elapsed_time(seconds)
+        last_auto_save_time = time.time()
+
+    main_window.set_clock_text(formatted_time)
     update_price(seconds)
 
 
@@ -151,25 +184,12 @@ def on_app_closing():
 
 main_window.app.aboutToQuit.connect(on_app_closing)
 main_window.project_list.activated.connect(on_job_selected)
-main_window.create_project_button.clicked.connect(on_create_projet_button_clicked)
-main_window.edit_project_button.clicked.connect(on_edit_projet_button_clicked)
+main_window.create_project_button.clicked.connect(on_create_project_button_clicked)
+main_window.edit_project_button.clicked.connect(on_edit_project_button_clicked)
 main_window.delete_project_button.clicked.connect(on_delete_projet_button_clicked)
 main_window.clock_button.clicked.connect(on_start_stop_clicked)
 
 timer = JobTimer(timer_update_callback)
-
-
-def inactivity_callback():
-    sound_inactivity.play()
-    timer.stop()
-    main_window.set_running_state(RunningState.IDLE)
-
-
-def activity_returns_callback():
-    sound_activity_returns.play()
-    timer.start()
-    main_window.set_running_state(RunningState.RUNNING)
-
 
 inactivity_controller = InactivityController(main_window.window, inactivity_callback, activity_returns_callback)
 

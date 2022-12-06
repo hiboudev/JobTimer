@@ -1,0 +1,7 @@
+.idea
+src/.pytest_cache
+__pycache__
+src/jobs_database.db
+build
+dist
+JobTimer.spec
