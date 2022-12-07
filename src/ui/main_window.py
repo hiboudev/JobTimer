@@ -94,13 +94,21 @@ class MainWindow:
             self.tray.setIcon(self.icon_idle)
 
     def set_hourly_rate(self, hourly_rate: int):
-        self.hourly_rate_label.setText("{} € / h".format(hourly_rate))
+        """Give value -1 to clear display."""
+        if hourly_rate == -1:
+            self.hourly_rate_label.setText("")
+        else:
+            self.hourly_rate_label.setText("{} € / h".format(hourly_rate))
 
     def set_clock_text(self, value: str):
         self.clock.setText(value)
 
     def set_price(self, price: float):
-        self.price_label.setText("{:.2f} €".format(price))
+        """Give value -1 to clear display."""
+        if price == -1:
+            self.price_label.setText("")
+        else:
+            self.price_label.setText("{:.2f} €".format(price))
 
     def add_project_to_list(self, job: Job):
         self.project_list.addItem(job.name, job)

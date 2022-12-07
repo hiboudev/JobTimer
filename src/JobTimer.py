@@ -95,7 +95,9 @@ def save_job_elapsed_time(elapsed_seconds: float):
 
 
 def on_create_project_button_clicked():
-    stop_timer()
+    if is_running:
+        stop_timer()
+        
     dialog = CreateProjectDialog()
     ok = dialog.exec()
     if ok:
@@ -144,6 +146,8 @@ def on_delete_projet_button_clicked():
         else:
             active_job = None
             main_window.set_clock_text("")
+            main_window.set_price(-1)
+            main_window.set_hourly_rate(-1)
 
 
 def on_job_selected():

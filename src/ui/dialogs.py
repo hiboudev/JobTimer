@@ -18,6 +18,8 @@ class CreateProjectDialog(QDialog):
 
         self.ui.hourlyRate.setValidator(QRegExpValidator(QRegExp('[0-9]+')))
 
+        self.ui.projectName.setFocus()
+
     def _build_ui(self):
         self.ui = Ui_CreateProjectDialog()
 
