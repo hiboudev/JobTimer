@@ -1,1 +1,1 @@
-A simple tool to count time elapsed on a job.
+A simple tool to count time spent on a job.
