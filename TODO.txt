@@ -1,3 +1,2 @@
-- enregistrement en BDD
-  - inactivité
-  - toutes les minutes
+- bouton pour mettre en pause tout en laissant la détection d'inactivité (c'est pour partir en pause en évitant de toujours grignoter une minute)
+  - il faut un délai de 10 secondes avant que la détection d'inactivité se remette en route

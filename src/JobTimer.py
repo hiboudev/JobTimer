@@ -97,7 +97,7 @@ def save_job_elapsed_time(elapsed_seconds: float):
 def on_create_project_button_clicked():
     if is_running:
         stop_timer()
-        
+
     dialog = CreateProjectDialog()
     ok = dialog.exec()
     if ok:
