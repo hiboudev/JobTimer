@@ -30,8 +30,8 @@ class CreateProjectDialog(QDialog):
     def get_project_name(self) -> str:
         return self.ui.projectName.text()
 
-    def get_hourly_rate(self) -> str:
-        return self.ui.hourlyRate.text()
+    def get_hourly_rate(self) -> int:
+        return int(self.ui.hourlyRate.text())
 
     def done(self, result: int):
         if not result:

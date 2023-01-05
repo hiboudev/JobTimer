@@ -101,7 +101,7 @@ def on_create_project_button_clicked():
     dialog = CreateProjectDialog()
     ok = dialog.exec()
     if ok:
-        new_job = database.add_job(dialog.get_project_name(), int(dialog.get_hourly_rate()))
+        new_job = database.add_job(dialog.get_project_name(), dialog.get_hourly_rate())
         main_window.add_project_to_list(new_job)
         set_active_job(new_job)
 
@@ -116,10 +116,10 @@ def on_edit_project_button_clicked():
     dialog.set_seconds(active_job.elapsed_seconds)
 
     if dialog.exec():
-        database.edit_job(active_job.id, dialog.get_project_name(), int(dialog.get_hourly_rate()))
+        database.edit_job(active_job.id, dialog.get_project_name(), dialog.get_hourly_rate())
 
         active_job.name = dialog.get_project_name()
-        active_job.hourly_rate = int(dialog.get_hourly_rate())
+        active_job.hourly_rate = dialog.get_hourly_rate()
 
         timer.set_elapsed_seconds(dialog.get_seconds())
         main_window.set_hourly_rate(active_job.hourly_rate)

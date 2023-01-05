@@ -2,6 +2,7 @@
 src/.pytest_cache
 __pycache__
 src/jobs_database.db
+_prepa/sounds
 build
 dist
 JobTimer.spec
