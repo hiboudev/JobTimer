@@ -35,6 +35,7 @@ class MainWindow:
         self.window = QWidget()
         v_layout = QVBoxLayout()
         h_layout = QHBoxLayout()
+
         self.project_list = QComboBox()
 
         self.create_project_button = QPushButton("Nouveau")
@@ -112,16 +113,17 @@ class MainWindow:
 
     def add_project_to_list(self, job: Job):
         self.project_list.addItem(job.name, job)
+        self.project_list.model().sort(0)
         self.project_list.setCurrentIndex(self.project_list.findData(job))
 
     def remove_project_from_list(self, job: Job) -> Optional[Job]:
-        self.project_list.removeItem(self.__get_job_index(job))
+        self.project_list.removeItem(self.__get_project_index(job))
         return self.project_list.currentData()
 
     def update_project_name(self, job: Job):
-        self.project_list.setItemText(self.__get_job_index(job), job.name)
+        self.project_list.setItemText(self.__get_project_index(job), job.name)
 
-    def __get_job_index(self, job: Job) -> int:
+    def __get_project_index(self, job: Job) -> int:
         item_index = self.project_list.findData(job)
 
         if item_index == -1:
@@ -136,7 +138,7 @@ class MainWindow:
     def get_window(self):
         return self.window
 
-    def set_jobs(self, jobs: List[Job]) -> Job:
+    def set_projects(self, jobs: List[Job]) -> Job:
         for job in jobs:
             self.project_list.addItem(job.name, job)
 

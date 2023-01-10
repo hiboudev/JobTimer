@@ -197,7 +197,7 @@ timer = JobTimer(timer_update_callback)
 
 inactivity_controller = InactivityController(main_window.window, inactivity_callback, activity_returns_callback)
 
-selected_job = main_window.set_jobs(database.get_jobs())
+selected_job = main_window.set_projects(database.get_jobs())
 
 if selected_job:
     set_active_job(selected_job)
